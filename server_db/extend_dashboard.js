@@ -72,7 +72,6 @@ function getPoints(the_network_id, the_object_id, the_stream_id, callback){
     var query_string = "?" + $.param(query_data);
     var url = '/networks/'+the_network_id+'/objects/'+the_object_id;
     url += '/streams/'+the_stream_id+'/points'+query_string;
-
     $.ajax({
         url: url,
         success: function(response) {
@@ -97,7 +96,7 @@ custom_sidebar_link_callback = function( select ){
     else if (select == 'report'){
         var plotCalls = 0;
         var plotTimer = setInterval( function(){
-            getPoints('local','test-object','test-stream', function(points){ 
+            getPoints('local','userTripData','proximity', function(points){ 
                 console.log( "The points request was successful!" );
             loadPlot( points ); });
     if( plotCalls > 20 ){
