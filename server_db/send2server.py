@@ -45,10 +45,37 @@ def send_2server(point_value, stream_shorthand, at=None, trip_obj=None):
 	url = trip_obj.base + end_point
 	payload = {"points-value": point_value, "points-at": at}
 	r = requests.request('post', url, headers=trip_obj.header, params=payload)
+	# print(r)
 
 def main():
-	test_array = np.linspace(1,10)
-	for val in test_array:
-		send_2server(val, "p")
+	trip_obj = trip_details()
+	#--test--
+	# test_array = np.linspace(1,10)
+	# for data in test_array:
+	# 	send_2server(data, "p", trip_obj=trip_obj)
+
+	#--send proximity--
+	start = datetime.datetime.now()
+	end = datetime.datetime(2017, 11, 20, start.hour+1, 59, 59)
+	step = datetime.timedelta(seconds=30)
+	time_list = []
+	while start < end:
+		time_list.append(start.isoformat()+"Z")
+		start += step
+	date_length = len(time_list)
+	proximity = np.random.rand(date_length)+5
+	for idx, val in enumerate(proximity):
+		send_2server(val, "p", at=time_list[idx], trip_obj=trip_obj)
+	
+	#--send velocity--
+	speed_list = np.random.rand(date_length)*100
+	for idx, val in enumerate(speed_list):
+		send_2server(val, "s", at=time_list[idx], trip_obj=trip_obj)
+
+	#--send elevation--
+	ele_list = np.random.rand(date_length)*20
+	for idx, val in enumerate(ele_list):
+		send_2server(val, "e", at=time_list[idx], trip_obj=trip_obj)
+
 main()
 
