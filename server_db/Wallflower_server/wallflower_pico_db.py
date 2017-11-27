@@ -69,7 +69,7 @@ class WallflowerDB:
             #db.close()
             return True
                 
-        except sqlite3.OperationalError, err:
+        except sqlite3.OperationalError as err:
             self.debug( err )
             db.rollback()
             cursor.close()
@@ -93,7 +93,7 @@ class WallflowerDB:
             #db.close()
             return content, True
                 
-        except sqlite3.OperationalError, err:
+        except sqlite3.OperationalError as err:
             self.debug( err )
             db.rollback()
             cursor.close()
