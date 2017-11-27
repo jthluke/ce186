@@ -1,3 +1,6 @@
+#include <Adafruit_NeoPixel.h>
+#define PIN 6
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN, NEO_GRB + NEO_KHZ800);
 
 // defines pins numbers
 const int trigPin = 9;
@@ -10,9 +13,13 @@ int toAvg[5];
 int total;
 const int motorPin = 3;
 boolean alert = 0;
-const int ledPin = 6;
-int trigDist = 90;
+//const int ledPin = 6;
+int trigDist = 90; 
 
+// Global RGB values, change to suit your needs
+int r = 255;
+int g = 0;
+int b = 255;
 
 void setup() {
   // put your setup code here, to run once:
@@ -22,6 +29,12 @@ pinMode(motorPin, OUTPUT);
 pinMode(ledPin, OUTPUT); //Sets LED as Output
 
 Serial.begin(9600); // Starts the serial communication
+//sets up neopixel lights
+strip.begin();
+  strip.setBrightness(20);
+  strip.show();
+  pinMode(switchPin, INPUT);
+
 }
 
 void loop() {
@@ -56,33 +69,25 @@ for (int i = 0; i < 5; i = i + 1){
 AvgDist = total/5;
 alert = alertFunction(toAvg);
 
-
-// print distance 
-/*
-Serial.println(toAvg[0]);
-Serial.println(toAvg[4]);
-Serial.print("Avg Dist: ");
+//Print average of 3 values
+//Serial.print("Avg Dist: ");
 Serial.println(AvgDist);
-Serial.print("Alert: ");
-Serial.println(alert);
-*/
-Serial.println(AvgDist);
-warning = AvgDist < trigDist && alert == 1;
-Serial.println(warning);
+//Serial.print("Alert: ");
+//Serial.println(alert);
 
 
+//turns on light and vibration motor when object is near and approaching
 if (AvgDist < trigDist && alert == 1){
   
-    analogWrite(ledPin, 255);
+    blinky(3);
     digitalWrite(motorPin, HIGH);
     delay(500);
-    analogWrite(ledPin, 0);
     digitalWrite(motorPin, LOW);
     delay(50);
 
   }
-}
 
+}
 boolean alertFunction(int dist_array) {
   if (toAvg[3] < toAvg[1] | toAvg[4] < toAvg[2]){
   alert = 1;
@@ -93,6 +98,28 @@ return alert;
 }
 
 
+void allOff() {
+  strip.clear();
+  strip.show();
+}
+
+// Turns the NeoPixels on, according to RGB settings
+void activate() {
+  for( int i = 0; i < 16; i++ ) 
+       strip.setPixelColor(i, r,g,b );
+      
+  strip.show();
+}
+
+void blinky(int repeats) {
+  for (int i = 0; i < repeats; i++)
+  {
+    activate();
+    delay(100);
+    allOff();
+    delay(40);
+  }
+}
 
 
 
