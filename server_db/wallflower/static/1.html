@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <title>Simple markers</title>
+    <title>Simple Polylines</title>
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -20,21 +20,46 @@
   </head>
   <body>
     <div id="map"></div>
+    <script src="http://d3js.org/d3.v4.min.js"></script>
     <script>
-
       function initMap() {
-        var myLatLng = {lat: -25.363, lng: 131.044};
-        console.log("hello from inside")
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 4,
-          center: myLatLng
-        });
+          zoom: 3,
+          center: {lat: 0, lng: -180},
+          mapTypeId: 'terrain'
+          });
 
-        var marker = new google.maps.Marker({
-          position: myLatLng,
-          map: map,
-          title: 'Hello World!'
-        });
+        // var flightPlanCoordinates = [
+        //   {lat: 37.772, lng: -122.214},
+        //   {lat: 21.291, lng: -157.821},
+        //   {lat: -18.142, lng: 178.431},
+        //   {lat: -27.467, lng: 153.027}
+        // ];
+        // console.log(flightPlanCoordinates)
+
+        // console.log("Hello froms inside")
+        var trip_gps = []
+        var count = []
+        d3.json("test_gps.txt", function(error, data) 
+            {
+              if (error) throw error
+              for (i = 0; i < data.length; i++) {
+                trip_gps.push({lat: data[i][0], lng: data[i][1]})
+              }
+              console.log(trip_gps)
+              var flightPath = new google.maps.Polyline({
+                // path: flightPlanCoordinates,
+                path: trip_gps,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+                });
+
+              flightPath.setMap(map);
+                  }
+          )
+
       }
     </script>
     <script async defer
