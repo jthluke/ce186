@@ -1,7 +1,9 @@
 """
 	Post trip: send sensor data and user feedback data to central server
 """
+import csv
 import datetime
+from datetime import date
 import serial
 import requests
 import time
@@ -18,7 +20,7 @@ class trip_details(object):
 		self.base = "http://127.0.0.1:5000"
 		self.object_id = "userTripData"
 		self.stream_id_dict = {"e": "elevation", "g": "gps", 
-								"s": "speed", "p": "proximity", 
+								"s": "speed", "p": "proximity", "l":"light",
 								"r": "rating", "c": "comments"}
 	
 	def get_endpoint(self, stream_id):
@@ -54,28 +56,89 @@ def main():
 	# for data in test_array:
 	# 	send_2server(data, "p", trip_obj=trip_obj)
 
+
+
+    #--send gps--#
+    with open('testSD.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            lat = row['lat']
+            lon = row['lon']
+            val = (lat,lon)
+            send_2server(val, "g", at=time, trip_obj=trip_obj)                                                                                              
+        
+
 	#--send proximity--
-	start = datetime.datetime.now()
-	end = datetime.datetime(2017, 11, 20, start.hour+1, 59, 59)
-	step = datetime.timedelta(seconds=30)
-	time_list = []
-	while start < end:
-		time_list.append(start.isoformat()+"Z")
-		start += step
-	date_length = len(time_list)
-	proximity = np.random.rand(date_length)+5
-	for idx, val in enumerate(proximity):
-		send_2server(val, "p", at=time_list[idx], trip_obj=trip_obj)
+# =============================================================================
+# 	start = datetime.datetime.now()
+# 	end = datetime.datetime(2017, 11, 20, start.hour+1, 59, 59)
+# 	step = datetime.timedelta(seconds=30)
+# 	time_list = []
+# 	while start < end:
+# 		time_list.append(start.isoformat()+"Z")
+# 		start += step
+# 	date_length = len(time_list)
+# 	proximity = np.random.rand(date_length)+5
+# 	for idx, val in enumerate(proximity):
+# 		send_2server(val, "p", at=time_list[idx], trip_obj=trip_obj)
+#      
+# =============================================================================
+    #put path to SD csv HERE 
+    SDcsv = 'PATH.CSV'  
+    #SD Card
+    with open(SDcsv) as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            val = float(row['prox']) #cm   
+            send_2server(val, "p", at=time, trip_obj=trip_obj)
+         
+            
+        
+
 	
 	#--send velocity--
-	speed_list = np.random.rand(date_length)*100
-	for idx, val in enumerate(speed_list):
-		send_2server(val, "s", at=time_list[idx], trip_obj=trip_obj)
+# =============================================================================
+# 	speed_list = np.random.rand(date_length)*100
+# 	for idx, val in enumerate(speed_list):
+# 		send_2server(val, "s", at=time_list[idx], trip_obj=trip_obj)
+#         
+# =============================================================================
+        
+        #--send gps--#
+    with open(SDcsv) as csvfile:
+        reader = csv.DictReader(csvfile)    
+        for row in reader:
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            vel = float(row['vel'])*1.15078 #convert knots to mph
+            send_2server(val, "s", at=time, trip_obj=trip_obj)
+ 
 
 	#--send elevation--
-	ele_list = np.random.rand(date_length)*20
-	for idx, val in enumerate(ele_list):
-		send_2server(val, "e", at=time_list[idx], trip_obj=trip_obj)
+# =============================================================================
+# 	ele_list = np.random.rand(date_length)*20
+# 	for idx, val in enumerate(ele_list):
+# 		send_2server(val, "e", at=time_list[idx], trip_obj=trip_obj)        
+#         
+# =============================================================================
+       #--send gps--#
+    with open(SDcsv) as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            val = float(row['elev'])
+            send_2server(val, "e", at=time, trip_obj=trip_obj) 
 
+
+
+    #--send light--#
+    with open(SDcsv) as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            light =float(row['light'])
+            send_2server(val, "l", at=time, trip_obj=trip_obj)
+    
 main()
 
