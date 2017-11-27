@@ -8,6 +8,7 @@ int distance;
 int AvgDist;
 int toAvg[5];
 int total;
+const int motorPin = 3;
 boolean alert = 0;
 const int ledPin = 6;
 int trigDist = 80;
@@ -18,6 +19,7 @@ void setup() {
   // put your setup code here, to run once:
 pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
 pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+pinMode(motorPin, OUTPUT);
 pinMode(ledPin, OUTPUT); //Sets LED as Output
 
 Serial.begin(9600); // Starts the serial communication
@@ -63,15 +65,16 @@ Serial.print("Alert: ");
 Serial.println(alert);
 
 
-/*
+
 if (AvgDist < trigDist && alert == 1){
+  
     analogWrite(ledPin, 255);
+    digitalWrite(motorPin, HIGH);
     delay(500);
     analogWrite(ledPin, 0);
+    digitalWrite(motorPin, LOW);
+
   }
-
- */
-
 
 }
 boolean alertFunction(int dist_array) {
