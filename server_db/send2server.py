@@ -55,14 +55,17 @@ def main():
 	# test_array = np.linspace(1,10)
 	# for data in test_array:
 	# 	send_2server(data, "p", trip_obj=trip_obj)
-
+#put path to SD csv HERE 
+    #SDcsv = 'PATH.CSV'  
+    SDcsv = 'C:\\Users\\Vania Fong\\Documents\\College Academics\\4th Year\\CE 186\\Final Project 186\\testSD.csv'
+   
 
 
     #--send gps--#
-    with open('testSD.csv') as csvfile:
+    with open('SDcsv') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
             lat = row['lat']
             lon = row['lon']
             val = (lat,lon)
@@ -84,13 +87,11 @@ def main():
 # 		send_2server(val, "p", at=time_list[idx], trip_obj=trip_obj)
 #      
 # =============================================================================
-    #put path to SD csv HERE 
-    SDcsv = 'PATH.CSV'  
-    #SD Card
+     #SD Card
     with open(SDcsv) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
             val = float(row['prox']) #cm   
             send_2server(val, "p", at=time, trip_obj=trip_obj)
          
@@ -110,7 +111,7 @@ def main():
     with open(SDcsv) as csvfile:
         reader = csv.DictReader(csvfile)    
         for row in reader:
-            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
             vel = float(row['vel'])*1.15078 #convert knots to mph
             send_2server(val, "s", at=time, trip_obj=trip_obj)
  
@@ -126,7 +127,7 @@ def main():
     with open(SDcsv) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
             val = float(row['elev'])
             send_2server(val, "e", at=time, trip_obj=trip_obj) 
 
@@ -136,7 +137,7 @@ def main():
     with open(SDcsv) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y')
+            time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
             light =float(row['light'])
             send_2server(val, "l", at=time, trip_obj=trip_obj)
     
