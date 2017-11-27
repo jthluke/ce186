@@ -11,8 +11,7 @@ int total;
 const int motorPin = 3;
 boolean alert = 0;
 const int ledPin = 6;
-int trigDist = 80;
-
+int trigDist = 90;
 
 
 void setup() {
@@ -57,13 +56,17 @@ for (int i = 0; i < 5; i = i + 1){
 AvgDist = total/5;
 alert = alertFunction(toAvg);
 
+
+// print distance 
+/*
 Serial.println(toAvg[0]);
 Serial.println(toAvg[4]);
 Serial.print("Avg Dist: ");
 Serial.println(AvgDist);
 Serial.print("Alert: ");
 Serial.println(alert);
-
+*/
+Serial.println(AvgDist);
 
 
 if (AvgDist < trigDist && alert == 1){
@@ -76,8 +79,8 @@ if (AvgDist < trigDist && alert == 1){
     delay(50);
 
   }
-
 }
+
 boolean alertFunction(int dist_array) {
   if (toAvg[3] < toAvg[1] | toAvg[4] < toAvg[2]){
   alert = 1;
