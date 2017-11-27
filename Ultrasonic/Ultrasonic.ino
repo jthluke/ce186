@@ -73,6 +73,7 @@ if (AvgDist < trigDist && alert == 1){
     delay(500);
     analogWrite(ledPin, 0);
     digitalWrite(motorPin, LOW);
+    delay(50);
 
   }
 
