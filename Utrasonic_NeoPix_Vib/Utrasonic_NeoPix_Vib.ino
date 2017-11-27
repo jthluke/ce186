@@ -1,9 +1,11 @@
 // prints proximity (int), warning (boolean), and light level (kOhms)
 
 #include <Adafruit_NeoPixel.h>
-#define PIN 6
-Adafruit_NeoPixel strip1 = Adafruit_NeoPixel(16, PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(15, PIN, NEO_GRB + NEO_KHZ800);
+#define PIN1 12
+#define PIN2 13
+//avoid 10, 8, 7 bc they're used by the gps
+Adafruit_NeoPixel strip1 = Adafruit_NeoPixel(16, PIN1, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(16, PIN2, NEO_GRB + NEO_KHZ800);
 
 // defines pins numbers
 const int trigPin = 9;
@@ -37,12 +39,12 @@ pinMode(motorPin, OUTPUT);
 Serial.begin(9600); // Starts the serial communication
 //sets up neopixel lights
 strip1.begin();
-strip1.setBrightness(20);
+strip1.setBrightness(100);
 strip1.show();
 
 //sets up neopixel lights
 strip2.begin();
-strip2.setBrightness(20);
+strip2.setBrightness(100);
 strip2.show();
 
 }
@@ -91,7 +93,7 @@ Serial.println(warning);
 //turns on light and vibration motor when object is near and approaching
 if (AvgDist < trigDist && alert == 1){
   
-    blinky(3);
+    blinky(5);
     digitalWrite(motorPin, HIGH);
     delay(500);
     digitalWrite(motorPin, LOW);
