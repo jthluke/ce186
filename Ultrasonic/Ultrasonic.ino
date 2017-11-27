@@ -67,6 +67,8 @@ Serial.print("Alert: ");
 Serial.println(alert);
 */
 Serial.println(AvgDist);
+warning = AvgDist < trigDist && alert == 1;
+Serial.println(warning);
 
 
 if (AvgDist < trigDist && alert == 1){
