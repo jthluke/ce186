@@ -1,7 +1,6 @@
 #include <Adafruit_NeoPixel.h>
-#define PIN 6
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(13, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, 6, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(13, 7, NEO_GRB + NEO_KHZ800);
 
 // defines pins numbers
 const int trigPin = 9;
