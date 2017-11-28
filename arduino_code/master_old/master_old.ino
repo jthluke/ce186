@@ -3,22 +3,12 @@
 // 2) Adafruit_GPS:  https://github.com/adafruit/Adafruit_GPS
 // 3) NeoPixel: https://github.com/adafruit/Adafruit_NeoPixel
 
-/* USED PINS
-mySerial 8 7
-chipSelect 10
-ledPin 13  (SD's card ledPin)
-neopixel1 uses 5
-neopixel2 uses 5
-trigPin 9
-echoPin 2
-motorPin 3
-Cannot use 11 and 12 (maybe???)
-*/
-
 /* -------------------------------------- */
 /* -----IMPORTS AND GLOBAL VARIABLES----- */
 /* -------------------------------------- */
 /* DATA LOGGING / GPS STUFF */
+
+
 #include <SPI.h>
 #include <Adafruit_GPS.h>
 #include <SoftwareSerial.h>
@@ -27,7 +17,7 @@ Cannot use 11 and 12 (maybe???)
 
 SoftwareSerial mySerial(8, 7);
 Adafruit_GPS GPS(&mySerial);
-#define GPSECHO  false // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
+#define GPSECHO  true // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
 #define LOG_FIXONLY true // set to true to only log to SD when GPS has a fix, for debugging, keep it false
 boolean usingInterrupt = false; // this keeps track of whether we're using the interrupt; off by default
 void useInterrupt(boolean); // Func prototype keeps Arduino 0023 happy
@@ -69,31 +59,32 @@ void error(uint8_t errno) { // blink out an error code
 /* HARDWARE STUFF */
 #include <Adafruit_NeoPixel.h>
 #define myPIN1 5
-#define myPIN2 5
+#define myPIN2 6
 //avoid 10, 8, 7 bc they're used by the gps
 Adafruit_NeoPixel strip1 = Adafruit_NeoPixel(16, myPIN1, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(16, myPIN2, NEO_GRB + NEO_KHZ800);
 
 // defines pins numbers
-const byte trigPin = 9;
-const byte echoPin = 2;
-const byte motorPin = 3;
+const int trigPin = 9;
+const int echoPin = 11;
 // defines variables
 long duration;
 int distance;
 int AvgDist;
 int toAvg[5];
 int total;
+const int motorPin = 3;
 boolean alert = 0;
-byte trigDist = 90;  
+//const int ledPin = 6;
+int trigDist = 90; 
 
 //Photoresistor resistor
 int R2 = 10000;
 
 // Global RGB values, change to suit your needs
-byte r = 255;
-byte g = 0;
-byte b = 255;
+int r = 255;
+int g = 0;
+int b = 255;
 
 
 /* -------------------------------------- */
@@ -112,7 +103,7 @@ void setup() {
     error(2);
   }
   char filename[15];
-  strcpy(filename, "GPSLOG00.csv");
+  strcpy(filename, "GPSLOG00.TXT");
   for (uint8_t i = 0; i < 100; i++) {
     filename[6] = '0' + i/10;
     filename[7] = '0' + i%10;
@@ -146,6 +137,7 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   pinMode(motorPin, OUTPUT);
+  //pinMode(ledPin, OUTPUT); //Sets LED as Output
   
   //sets up neopixel lights
   strip1.begin();
@@ -165,9 +157,12 @@ void setup() {
 // Interrupt is called once a millisecond, looks for any new GPS data, and stores it
 SIGNAL(TIMER0_COMPA_vect) {
   char c = GPS.read();
+  // if you want to debug, this is a good time to do it!
   #ifdef UDR0
       if (GPSECHO)
         if (c) UDR0 = c;  
+      // writing direct to UDR0 is much much faster than Serial.print 
+      // but only one character can be written at a time. 
   #endif
 }
 
@@ -196,6 +191,7 @@ boolean alertFunction(int dist_array) {
   return alert;
 }
 
+
 void allOff() {
   strip1.clear();
   strip2.clear();
@@ -222,6 +218,8 @@ void blinky(int repeats) {
     delay(40);
   }
 }
+
+
 
 /* -------------------------------------- */
 /* -----MAIN LOOP----- */
@@ -259,11 +257,18 @@ void loop() {
   }
   AvgDist = total/5;
   alert = alertFunction(toAvg);
-  
+
+  //Print average of 3 values
+  //Serial.print("Avg Dist: ");
+//  Serial.println(AvgDist);
+  //Serial.print("Alert: ");
+  //Serial.println(alert);
   boolean warning = AvgDist < trigDist && alert;
-  
+//  Serial.println(warning);
+
   //turns on light and vibration motor when object is near and approaching
   if (warning){
+  
     blinky(5);
     digitalWrite(motorPin, HIGH);
     delay(500);
@@ -277,18 +282,17 @@ void loop() {
   int mapmV = map(sensorValue, 0, 1023, 0, 5000);
 
 //  int R1 =  ((((5*1000)/mapmV)-1)*R2)/1000;
-//  Serial.print("--->");Serial.println(mapmV); // in mV (proportional to brightness)
-//  Serial.print("--->");Serial.println(R1); // in kilo-Ohms (inversely prop to brightness)
+//  Serial.print("--->");Serial.println(mapmV); // in kilo-Ohms (indicates brightness)
+//  Serial.print("--->");Serial.println(R1); // in kilo-Ohms (indicates brightness)
 
+  //turn on both night lights if dark (higher R1 values means lower brightness)
   boolean nightlight = mapmV < 150;
   if (nightlight) {
     activate();
   } else {
     allOff();
-  }
-
-//  boolean warning = true;
-//  boolean nightlight = false;
+ }
+  
   /* DATA LOGGING / GPS STUFF */
   if (! usingInterrupt) {
     char c = GPS.read(); // read data from the GPS in the 'main loop'
@@ -297,52 +301,49 @@ void loop() {
   }
   
   if (GPS.newNMEAreceived()) {
-//    char *stringptr = GPS.lastNMEA(); // Don't call lastNMEA more than once between parse calls!
-    char *stringptr = "a"; // Don't call lastNMEA more than once between parse calls!
-
+    char *stringptr = GPS.lastNMEA(); // Don't call lastNMEA more than once between parse calls!  
     
-    if (!GPS.parse(GPS.lastNMEA()))   // this also sets the newNMEAreceived() flag to false
+    if (!GPS.parse(stringptr))   // this also sets the newNMEAreceived() flag to false
       return;  // we can fail to parse a sentence in which case we should just wait for another
 
     Serial.println("OK"); // Sentence parsed! 
-    uint8_t stringsize = strlen(stringptr);
-    if (stringsize != logfile.write((uint8_t *)stringptr, stringsize))    //write the string to the SD file
-        error(4);
-//    if (strstr(stringptr, "RMC") || strstr(stringptr, "GGA"))   logfile.flush();
-    logfile.flush();
   }
 
   if (timer > millis()){
+//    Serial.println("oooooooops");
     timer = millis();
   }
-
+//  Serial.print("timer: ");Serial.println(timer);
+//  Serial.print("millis: ");Serial.println(millis());
   if (millis() - timer > 1000) { 
+    Serial.println("asdf1");
     timer = millis();
     if (!GPS.fix) {
-      Serial.println("No fix.");
-      Serial.print(warning); Serial.println(nightlight);
+      Serial.println("asdf2");
     } else {
       Serial.println("Log"); // Rad. lets log it!
-      Serial.print(warning); Serial.println(nightlight);
+      //Time Date
       logfile.print(GPS.hour, DEC); logfile.print(':');
       logfile.print(GPS.minute, DEC); logfile.print(':');
       logfile.print(GPS.seconds, DEC); logfile.print('.');
-      logfile.print(GPS.milliseconds); logfile.print(' ');
+      logfile.print(GPS.milliseconds);
       logfile.print(GPS.day, DEC); logfile.print('/');
       logfile.print(GPS.month, DEC); logfile.print("/20");
-      logfile.print(GPS.year, DEC); logfile.print(','); 
+      logfile.print(GPS.year, DEC); logfile.print(","); 
       //Lat
-      logfile.print(GPS.latitudeDegrees, 4); logfile.print(',');
+      logfile.print(GPS.latitudeDegrees, 4); logfile.print(","); 
       //Lng
-      logfile.print(GPS.longitudeDegrees, 4); logfile.print(',');
+      logfile.print(GPS.longitudeDegrees, 4);  logfile.print(","); 
       //Speed (knots)
-      logfile.print(GPS.speed); logfile.print(',');
+      logfile.print(GPS.speed); logfile.print(","); 
       //Altitude
-      logfile.print(GPS.altitude); logfile.print(',');
+      logfile.print(GPS.altitude); logfile.print(","); 
       //Warning
-      logfile.print(warning); logfile.print(',');
+      logfile.print(warning); logfile.print(",");
       //NightLight
-      logfile.println(nightlight);
+      logfile.print(nightlight); logfile.print(",");
+      logfile.println();      
+      Serial.println();
    }
   }
 }
