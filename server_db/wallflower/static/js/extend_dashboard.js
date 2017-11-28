@@ -26,7 +26,8 @@ function onInputFormSubmit(e){
     e.preventDefault();
     var network_id = "local";
     var object_id = "userTripData";
-    var stream_id = "rating";
+    var stream_rating_id = "rating";
+    var stream_comment_id = "comments";
 
     //Gather the data 
     //and remove any undefined keys
@@ -37,14 +38,42 @@ function onInputFormSubmit(e){
         });
     delete data["undefined"];
 
-    console.log(data);
+    console.log(data["rating"]);
 
     var url='/networks/'+network_id+'/objects/';
-    url = url + object_id + '/streams/'+stream_id+'/points';
+    url = url + object_id + '/streams/'+stream_rating_id+'/points';
     var query = {
-        "points-value": JSON.stringify(data)
+        "points-value": JSON.stringify(parseFloat(data["rating"]))
         };
     // console.log(url)
+    // console.log(query)
+    //Send request to Pico server
+    $.ajax({
+        url: url+'?'+$.param(query),
+        type: "post",
+        success: function(response){
+        var this_form = $("form#form-input");
+
+        if(response['points-code'] == 200){
+            console.log("Success");
+            //Clear the form
+            this_form.trigger("reset");
+            }
+            //log the response to the console
+            console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                //Do nothing
+            }
+        });
+
+    var url='/networks/'+network_id+'/objects/';
+    url = url + object_id + '/streams/'+stream_comment_id+'/points';
+    var query = {
+        "points-value": JSON.stringify(data["comments"])
+        };
+    console.log(url)
+    console.log(data)
     //Send request to Pico server
     $.ajax({
         url: url+'?'+$.param(query),
@@ -106,7 +135,7 @@ custom_sidebar_link_callback = function( select ){
         // $("#page-trip").load("/static/js_GoogleMap_markerCluster.html")
         // $("#page-trip").load("/static/1.html")
         // window.open("http://localhost:8000/js_GoogleMap_markerCluster.html", 'newwin', 'height=1000px,width=1500px');
-        window.open("http://localhost:8000/1.html", 'newwin', 'height=1000px,width=1500px');
+        window.open("http://127.0.0.1:8000/static/1.html", 'newwin', 'height=1000px,width=1500px');
 
     }
 }

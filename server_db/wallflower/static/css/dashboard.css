@@ -6,11 +6,62 @@
 
 body {
     background-color: #f8f8f8;
+
+    padding-bottom: 40px;
+    color: #5a5a5a;
 }
 
 label {
     font-size: 16px;
 }
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+/* Carousel base class */
+.carousel {
+  height: 700px;
+  margin-bottom: 60px;
+}
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+  z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel .item {
+  height: 700px;
+  background-color: #777;
+}
+.carousel-inner > .item > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  height: 700px;
+}
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}
+/* -------------------------------------------------- */
+
+
 
 #wrapper {
     width: 100%;
@@ -139,7 +190,7 @@ label {
         z-index: 1;
         position: absolute;
         width: 250px;
-        margin-top: 51px;
+        margin-top: 751px;
     }
 
     .navbar-top-links .dropdown-messages,
@@ -372,6 +423,24 @@ table.dataTable thead .sorting:after {
 
 .panel-yellow a:hover {
     color: #df8a13;
+}
+
+.panel-new {
+    border-color: #A9A9A9;
+}
+
+.panel-new .panel-heading {
+    border-color: #A9A9A9;
+    color: #fff;
+    background-color: #A9A9A9;
+}
+
+.panel-new a {
+    color: #A9A9A9;
+}
+
+.panel-new a:hover {
+    color: #808080;
 }
 
 fieldset p.help-block{
