@@ -24,22 +24,13 @@
     <script>
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 3,
-          center: {lat: 0, lng: -180},
+          zoom: 15,
+          center: {lat: 37.8718, lng: -122.2566},
           mapTypeId: 'terrain'
           });
-
-        // var flightPlanCoordinates = [
-        //   {lat: 37.772, lng: -122.214},
-        //   {lat: 21.291, lng: -157.821},
-        //   {lat: -18.142, lng: 178.431},
-        //   {lat: -27.467, lng: 153.027}
-        // ];
-        // console.log(flightPlanCoordinates)
-
-        // console.log("Hello froms inside")
         var trip_gps = []
         var count = []
+
         d3.json("test_gps.txt", function(error, data) 
             {
               if (error) throw error
@@ -47,20 +38,54 @@
                 trip_gps.push({lat: data[i][0], lng: data[i][1]})
               }
               console.log(trip_gps)
+
+              var lineSymbol = {
+                path: 'M 0,-1 0,1',
+                strokeOpacity: 1,
+                scale: 4
+              };
+              var image = {
+                url: 'http://localhost:8000/images/bike.jpg',
+                scaledSize: new google.maps.Size(40,40)
+              };
+              var marker1 = new google.maps.Marker({
+                position: trip_gps[0],
+                map: map,
+                icon: image,
+                animation: google.maps.Animation.DROP
+              });
+
+              var marker2 = new google.maps.Marker({
+                position: trip_gps[trip_gps.length-1],
+                map: map,
+                label: 'D',
+                title: 'Destination',
+                animation: google.maps.Animation.DROP
+              });
+
               var flightPath = new google.maps.Polyline({
                 // path: flightPlanCoordinates,
                 path: trip_gps,
+                strokeOpacity: 0,
                 geodesic: true,
-                strokeColor: '#FF0000',
-                strokeOpacity: 1.0,
-                strokeWeight: 2
+                strokeColor: '#133FE5',
+                icons: [{
+                  icon: lineSymbol,
+                  offset:'0',
+                  repeat:'20px'
+                }]
                 });
 
-              flightPath.setMap(map);
-                  }
-          )
+              // var infowindow1 = new google.maps.InfoWindow({
+              //   content: 'This is where you started.'
+              // });
 
-      }
+              // marker1.addListener('click', function() {
+              //   infowindow1.open(map, marker1);
+
+              flightPath.setMap(map);
+              })
+            } 
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAiT_YOLtKwK0yIVtm4Ajtz68ka14ZXsk&callback=initMap">
