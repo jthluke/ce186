@@ -95,20 +95,19 @@ custom_sidebar_link_callback = function( select ){
     if (select == 'input') {
     }
     else if (select == 'report'){
-        // var plotCalls = 0;
         var plotTimer = setInterval( function(){
             getPoints('local','userTripData','proximity', function(points){ 
-                console.log( "The points request was successful!" );
+                console.log( "Proximity points request was successful!" );
             loadPlot( points ); });
-    // if( plotCalls > 20 ){
-    //     console.log( 'Clear timer' );
-    //     clearInterval( plotTimer );
-    // }else{
-    //     plotCalls += 1; }
         }, 1000);
     }
     else if (select == 'trip') {
-        $("#page-trip").load("/static/js_GoogleMap_markerCluster.html")
+        console.log("loading..")
+        // $("#page-trip").load("/static/js_GoogleMap_markerCluster.html")
+        // $("#page-trip").load("/static/1.html")
+        // window.open("http://localhost:8000/js_GoogleMap_markerCluster.html", 'newwin', 'height=1000px,width=1500px');
+        window.open("http://localhost:8000/1.html", 'newwin', 'height=1000px,width=1500px');
+
     }
 }
 
@@ -143,8 +142,14 @@ var report_plot_options = {
     title: {
             text: 'How close are you to the automobiles while you are biking?'
         },
+    yAxis: {
+        title: {
+            text: 'Distance (m)',
+            },
+        type: 'category', 
+        },
     xAxis: { 
-        type: 'datetime', 
+        type: 'datetime',  
         title: {
             text: 'Time during trip'
             },
@@ -152,11 +157,5 @@ var report_plot_options = {
             month: '%e. %b',
             year: '%b' 
             },
-        },
-    yAxix: {
-        title: {
-            text: 'Distance (m)',
-            },
-        type: 'category', 
-        },
+        }
     };

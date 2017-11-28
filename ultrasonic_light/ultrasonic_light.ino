@@ -1,6 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 #define PIN 6
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, PIN, NEO_GRB + NEO_KHZ800);
 
 int potPin = 2;
 int val = 0;
@@ -73,7 +73,7 @@ void allOff() {
 
 // Turns the NeoPixels on, according to RGB settings
 void activate() {
-  for( int i = 0; i < 16; i++ ) 
+  for( int i = 0; i < 12; i++ ) 
        strip.setPixelColor(i, r,g,b );
       
   strip.show();
