@@ -85,8 +85,8 @@ int AvgDist;
 int toAvg[5];
 int total;
 boolean alert = 0;
-byte trigMax = 80;  
-byte trigMin = 60;
+byte trigMax = 30;  
+byte trigMin = 10;
 
 //Photoresistor resistor
 int R2 = 10000;
@@ -205,19 +205,19 @@ void allOff() {
 }
 
 // Turns the NeoPixels on, according to RGB settings
-void activate(g) {
+void activate(byte g2) {
   for( int i = 0; i < 16; i++ ) {
-    strip1.setPixelColor(i, r,g,b );
-    strip2.setPixelColor(i, r,g,b );
+    strip1.setPixelColor(i, r,g2,b );
+    strip2.setPixelColor(i, r,g2,b );
     strip1.show();
     strip2.show();
   }
 }
 
-void blinky(int repeats, g) {
+void blinky(int repeats, byte g2) {
   for (int i = 0; i < repeats; i++)
   {
-    activate(g);
+    activate(g2);
     delay(100);
     allOff();
     delay(40);
@@ -281,9 +281,10 @@ void loop() {
 //  Serial.print("--->");Serial.println(mapmV); // in mV (proportional to brightness)
 //  Serial.print("--->");Serial.println(R1); // in kilo-Ohms (inversely prop to brightness)
 
-  boolean nightlight = mapmV < 150;
+  boolean nightlight = mapmV < 100;
   if (nightlight) {
-    activate(150);
+    activate(255);
+    delay(1500);
   } else {
     allOff();
   }
@@ -321,9 +322,13 @@ void loop() {
     timer = millis();
     if (!GPS.fix) {
       Serial.println("No fix.");
+//      Serial.println(AvgDist);
+      Serial.println(mapmV);
       Serial.print(warning); Serial.println(nightlight);
     } else {
       Serial.println("Log"); // Rad. lets log it!
+//      Serial.println(AvgDist);
+      Serial.println(mapmV);
       Serial.print(warning); Serial.println(nightlight);
       logfile.print(GPS.hour, DEC); logfile.print(':');
       logfile.print(GPS.minute, DEC); logfile.print(':');
