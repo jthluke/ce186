@@ -10,6 +10,7 @@ import time
 import json
 import sys
 import numpy as np
+import pandas as pd
 
 class trip_details(object):
 	"""
@@ -20,8 +21,8 @@ class trip_details(object):
 		self.base = "http://127.0.0.1:5000"
 		self.object_id = "userTripData"
 		self.stream_id_dict = {"e": "elevation", "g": "gps", 
-								"s": "speed", "p": "proximity", "l": "light",
-								"r": "rating", "c": "comments", "n": "nightlight",
+								"s": "speed", "p": "proximity", "n": "nightlight",
+								"r": "rating", "c": "comments",
 								"w": "warninglight"}
 	
 	def get_endpoint(self, stream_id):
@@ -52,107 +53,47 @@ def send_2server(point_value, stream_shorthand, at=None, trip_obj=None):
 
 def main():
 	trip_obj = trip_details()
-	# --test--
-	# test_array = np.linspace(1,2)
-	# for data in test_array:
-	# 	send_2server(data, "g", trip_obj=trip_obj)
-	#GPS
-	# =============================================================================
-	# start = datetime.datetime.now()
-	# end = datetime.datetime(2017, 11, 27, start.hour, 59, 59)
-	# step = datetime.timedelta(seconds=30)
-	# time_list = []
-	# while start < end:
-	# 	time_list.append(start.isoformat()+"Z")
-	# 	print(start.isoformat()+"Z")
-	# 	start += step
-	# date_length = len(time_list)
-	# proximity = np.random.rand(date_length)+5
-	# for idx, val in enumerate(proximity):
-	# 	send_2server(val, "g", at=time_list[idx], trip_obj=trip_obj)
-#      
-	# =============================================================================
-	#Velocity
-	# =============================================================================
-	# 	speed_list = np.random.rand(date_length)*100
-	# 	for idx, val in enumerate(speed_list):
-	# 		send_2server(val, "s", at=time_list[idx], trip_obj=trip_obj)
-	#         
-	# =============================================================================
-	#Elevation
-	# =============================================================================
-	# 	ele_list = np.random.rand(date_length)*20
-	# 	for idx, val in enumerate(ele_list):
-	# 		send_2server(val, "e", at=time_list[idx], trip_obj=trip_obj)        
-	#         
-	# =============================================================================
-
 	#put path to SD csv HERE 
-	SDcsv = '/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/testSD.csv'
-   #--send gps--
-	# with open(SDcsv) as csvfile:
-	# 	reader = csv.DictReader(csvfile)
-	# 	# f = open("/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/wallflower/static/test_gps.txt", "wb")
-	# 	# f.write("[")
-	# 	for idx, row in enumerate(reader):
-	# 		time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
-	# 		lat = (row['lat'])
-	# 		lon = (row['lon'])
-	# 		val = "{0}, {1}".format(lat, lon)
-	# 		# # write data to txt
-	# 		# val4list = [float(lat), float(lon)]
-	# 		# f.write("{},".format(val4list))
-	# 	# f.write("]")
-	# 		send_2server(val, "g", at=time, trip_obj=trip_obj)                                                                                             
-        
-	# #--send proximity--
-	# with open(SDcsv) as csvfile:
-	# 	reader = csv.DictReader(csvfile)
-	# 	for row in reader:
-	# 		time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
-	# 		val = float(row['prox']) #cm   
-	# 		send_2server(val, "p", at=time, trip_obj=trip_obj)
+	path = '/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/GPSLOG00.csv'
+	reader = pd.read_csv(path)
+	reader = reader.replace('a', '', regex = True).dropna()
+	reader.columns = ['time', 'lat', 'lon', 'vel', 'elev', 'warning', 'nightlight' ]
+	reader = reader[reader.iloc[:,0].str.contains('(2017)', regex = True)]
 
-	# #--send velocity--
-	# with open(SDcsv) as csvfile:
-	# 	reader = csv.DictReader(csvfile)    
-	# 	for row in reader:
-	# 		time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
-	# 		val = float(row['vel'])*1.15078 #convert knots to mph
-	# 		send_2server(val, "s", at=time, trip_obj=trip_obj)
+	# f = open("/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/wallflower/static/test_gps.txt", "wb")
+	# f.write("[")
+	for i, row in reader.iterrows():
+		time = datetime.datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
+	#	#gps==============================================
+	# 	lat = (row['lat'])
+	# 	lon = (row['lon'])
+	# 	val = "{0}, {1}".format(lat, lon)
+		# val4list = [float(lat), float(lon)]
+	# 	#write data to txt
+	# 	f.write("{},".format(val4list))
+		# send_2server(val, "g", at=time, trip_obj=trip_obj) 
+	# 	#velocity=========================================
+	# 	vel = float(row['vel']) 
+	# 	send_2server(vel, "s", at=time, trip_obj=trip_obj)    
+	# 	#proximity warning================================
+	# 	warning = float(row['warning'])
+	# 	send_2server(warning, "w", at=time, trip_obj=trip_obj)
+	# 	#elevation============================================
+	# 	elev = float(row['elev'])
+	# 	send_2server(elev, "e", at=time, trip_obj=trip_obj)
+	# f.write("]")
 
-	# #--send elevation--
-	# with open(SDcsv) as csvfile:
-	# 	reader = csv.DictReader(csvfile)
-	# 	for row in reader:
-	# 		time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
-	# 		val = float(row['elev'])
-	# 		send_2server(val, "e", at=time, trip_obj=trip_obj) 
-
-	# #--send night light--#
-	# """
-	# Night light condictions check for the on and off status of the trip
-	# """
-	# with open(SDcsv) as csvfile:
-	# 	reader = csv.DictReader(csvfile)
-	# 	for row in reader:
-	# 		time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
-	# 		val =int(row['nightlight'])
-	# 		send_2server(val, "n", at=time, trip_obj=trip_obj)
-
-	#--send warning light--#
-	"""
-	Warning light condictions check for the on and off status of the trip
-	"""
-	with open(SDcsv) as csvfile:
-	    reader = csv.DictReader(csvfile)
-	    f = open("/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/wallflower/static/test_warning.txt", "wb")
-	    for row in reader:
-	        time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
-	        val =int(row['warninglight'])
-	        send_2server(val, "w", at=time, trip_obj=trip_obj)
-	        # write data to txt
-	        f.write("{},".format(val))
-
+	#random proximity data
+	start = datetime.datetime.now()
+	end = datetime.datetime(2017, 11, 29, start.hour, 40, 59)
+	step = datetime.timedelta(seconds=30)
+	time_list = []
+	while start < end:
+		time_list.append(start.isoformat()+"Z")
+		start += step
+	date_length = len(time_list)
+	proximity = np.random.rand(date_length)+5
+	for idx, val in enumerate(proximity):
+		send_2server(float(val), "p", at=time_list[idx], trip_obj=trip_obj)	
 main()
 
