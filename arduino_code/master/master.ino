@@ -85,7 +85,8 @@ int AvgDist;
 int toAvg[5];
 int total;
 boolean alert = 0;
-byte trigDist = 90;  
+byte trigMax = 80;  
+byte trigMin = 60;
 
 //Photoresistor resistor
 int R2 = 10000;
@@ -204,7 +205,7 @@ void allOff() {
 }
 
 // Turns the NeoPixels on, according to RGB settings
-void activate() {
+void activate(g) {
   for( int i = 0; i < 16; i++ ) {
     strip1.setPixelColor(i, r,g,b );
     strip2.setPixelColor(i, r,g,b );
@@ -213,10 +214,10 @@ void activate() {
   }
 }
 
-void blinky(int repeats) {
+void blinky(int repeats, g) {
   for (int i = 0; i < repeats; i++)
   {
-    activate();
+    activate(g);
     delay(100);
     allOff();
     delay(40);
@@ -260,11 +261,11 @@ void loop() {
   AvgDist = total/5;
   alert = alertFunction(toAvg);
   
-  boolean warning = AvgDist < trigDist && alert;
+  boolean warning = AvgDist < trigMax && alert && AvgDist > trigMin;
   
   //turns on light and vibration motor when object is near and approaching
   if (warning){
-    blinky(5);
+    blinky(5, 0);
     digitalWrite(motorPin, HIGH);
     delay(500);
     digitalWrite(motorPin, LOW);
@@ -282,7 +283,7 @@ void loop() {
 
   boolean nightlight = mapmV < 150;
   if (nightlight) {
-    activate();
+    activate(150);
   } else {
     allOff();
   }
