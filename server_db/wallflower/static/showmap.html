@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Simple Polylines</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script>
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 16,
+          center: {lat: 37.8718, lng: -122.2566},
+          mapTypeId: 'terrain'
+          });
+        var trip_gps = [];
+        var warning_loc = [];
+
+        // d3.json("test_warning.txt", function(error, data)
+        //     {
+        //       console.log(data)
+        //       if (error) throw error
+        //       for (i = 0; i < data.length; i++) {
+        //         if (data[i] == 1) {
+        //           warning_loc.push(i)
+        //         }
+        //       }
+        //       console.log(warning_loc)
+        //     }
+
+        d3.json("test_gps.txt", function(error, data) 
+            {
+              if (error) throw error
+              for (i = 0; i < data.length; i++) {
+                trip_gps.push({lat: data[i][0], lng: data[i][1]})
+              }
+
+              var lineSymbol = {
+                path: 'M 0,-1 0,1',
+                strokeOpacity: 1,
+                scale: 4
+              };
+
+              // ===================indicator of origin===================
+              var image_bikeOrigin = {
+                url: 'http://localhost:8000/images/bike.jpg',
+                scaledSize: new google.maps.Size(40,40)
+              };
+              var marker_origin = new google.maps.Marker({
+                position: trip_gps[0],
+                map: map,
+                icon: image_bikeOrigin,
+                title: 'Origin',
+                animation: google.maps.Animation.DROP
+              });
+              // infowindow for origin
+              var infowindow_origin = new google.maps.InfoWindow({
+                content: 'This is where you started.'
+              });
+
+              marker_origin.addListener('click', function() {
+                infowindow_origin.open(map, marker_origin);
+                })
+
+              // ==================indicator of destination==================
+              var marker_destination = new google.maps.Marker({
+                position: trip_gps[trip_gps.length-1],
+                map: map,
+                label: 'D',
+                title: 'Destination',
+                animation: google.maps.Animation.DROP
+              });
+              // infowindow for collision warning
+              var infowindow_desti = new google.maps.InfoWindow({
+                content: 'You have accomplished the trip here. Good luck studying!'
+              });
+
+              marker_destination.addListener('click', function() {
+                infowindow_desti.open(map, marker_destination);
+                })
+  
+              // ==================indicator of collision accident==================
+              var image_collision = {
+               url: 'http://localhost:8000/images/bikecarcollision.png',
+               scaledSize: new google.maps.Size(40,40)
+              };
+              var marker_collison = new google.maps.Marker({
+                position: {lat:37.868958, lng:-122.257595},
+                map: map,
+                // label: '!',
+                title: 'Oops, collision happened!',
+                icon: image_collision,
+                animation: google.maps.Animation.DROP
+              });
+              // infowindow for collision warning
+              var infowindow_collision = new google.maps.InfoWindow({
+                content: 'In our database, an accident at this place is recorded.'
+              });
+
+              marker_collison.addListener('click', function() {
+                infowindow_collision.open(map, marker_collison);
+                })
+
+              // ==================indicator of proximity warning==================
+              var image_warning = {
+                url: 'http://localhost:8000/images/wifiwarning.jpg',
+                scaledSize: new google.maps.Size(40,40)
+              };
+              var marker_warning1 = new google.maps.Marker({
+                position: {lat:37.868706, lng:-122.259413},
+                map: map,
+                title: 'Warning, too close',
+                icon: image_warning,
+                animation: google.maps.Animation.DROP
+              });
+              var marker_warning2 = new google.maps.Marker({
+                position: {lat:37.868638, lng:-122.259777},
+                map: map,
+                title: 'Warning, too close',
+                icon: image_warning,
+                animation: google.maps.Animation.DROP
+              });
+              // infowindow for too close warning
+              var infowindow_warning1 = new google.maps.InfoWindow({
+                content: 'A vehicle is right behind you at this point.'
+              });
+
+              marker_warning1.addListener('click', function() {
+                infowindow_warning1.open(map, marker_warning1);
+                })
+              var infowindow_warning2 = new google.maps.InfoWindow({
+                content: 'A vehicle is right behind you at this point.'
+              });
+
+              marker_warning2.addListener('click', function() {
+                infowindow_warning2.open(map, marker_warning2);
+                })
+
+              // set biking path
+              var bikepath = new google.maps.Polyline({
+                path: trip_gps,
+                strokeOpacity: 0,
+                geodesic: true,
+                strokeColor: '#133FE5',
+                icons: [{
+                  icon: lineSymbol,
+                  offset:'0',
+                  repeat:'20px'
+                  }]
+                });
+              bikepath.setMap(map);    
+            })}
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAiT_YOLtKwK0yIVtm4Ajtz68ka14ZXsk&callback=initMap">
+    </script>
+  </body>
+</html>

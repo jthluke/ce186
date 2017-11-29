@@ -135,7 +135,7 @@ custom_sidebar_link_callback = function( select ){
         // $("#page-trip").load("/static/js_GoogleMap_markerCluster.html")
         // $("#page-trip").load("/static/1.html")
         // window.open("http://localhost:8000/js_GoogleMap_markerCluster.html", 'newwin', 'height=1000px,width=1500px');
-        window.open("http://127.0.0.1:8000/static/1.html", 'newwin', 'height=1000px,width=1500px');
+        window.open("http://127.0.0.1:8000/static/showmap.html", 'newwin');
 
     }
 }

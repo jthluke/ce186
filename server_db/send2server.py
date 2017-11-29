@@ -20,8 +20,9 @@ class trip_details(object):
 		self.base = "http://127.0.0.1:5000"
 		self.object_id = "userTripData"
 		self.stream_id_dict = {"e": "elevation", "g": "gps", 
-								"s": "speed", "p": "proximity", "l":"light",
-								"r": "rating", "c": "comments"}
+								"s": "speed", "p": "proximity", "l": "light",
+								"r": "rating", "c": "comments", "n": "nightlight",
+								"w": "warninglight"}
 	
 	def get_endpoint(self, stream_id):
 		return "/networks/local/objects/"+self.object_id+"/streams/"+stream_id+"/points"
@@ -89,19 +90,19 @@ def main():
 	#put path to SD csv HERE 
 	SDcsv = '/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/testSD.csv'
    #--send gps--
-	with open(SDcsv) as csvfile:
-		reader = csv.DictReader(csvfile)
-		f = open("/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/wallflower/static/test_gps.txt", "wb")
-		f.write("[")
-		for idx, row in enumerate(reader):
-			time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
-			lat = (row['lat'])
-			lon = (row['lon'])
-			val = "{0}, {1}".format(lat, lon)
-			val4list = [float(lat), float(lon)]
-			#write data to txt
-			f.write("{},".format(val4list))
-		f.write("]")
+	# with open(SDcsv) as csvfile:
+	# 	reader = csv.DictReader(csvfile)
+	# 	# f = open("/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/wallflower/static/test_gps.txt", "wb")
+	# 	# f.write("[")
+	# 	for idx, row in enumerate(reader):
+	# 		time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
+	# 		lat = (row['lat'])
+	# 		lon = (row['lon'])
+	# 		val = "{0}, {1}".format(lat, lon)
+	# 		# # write data to txt
+	# 		# val4list = [float(lat), float(lon)]
+	# 		# f.write("{},".format(val4list))
+	# 	# f.write("]")
 	# 		send_2server(val, "g", at=time, trip_obj=trip_obj)                                                                                             
         
 	# #--send proximity--
@@ -128,13 +129,30 @@ def main():
 	# 		val = float(row['elev'])
 	# 		send_2server(val, "e", at=time, trip_obj=trip_obj) 
 
-    #--send light--#
-    # with open(SDcsv) as csvfile:
-    #     reader = csv.DictReader(csvfile)
-    #     for row in reader:
-    #         time = datetime.strptime(row['time'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
-    #         light =float(row['light'])
-    #         send_2server(val, "l", at=time, trip_obj=trip_obj)
-    
+	# #--send night light--#
+	# """
+	# Night light condictions check for the on and off status of the trip
+	# """
+	# with open(SDcsv) as csvfile:
+	# 	reader = csv.DictReader(csvfile)
+	# 	for row in reader:
+	# 		time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
+	# 		val =int(row['nightlight'])
+	# 		send_2server(val, "n", at=time, trip_obj=trip_obj)
+
+	#--send warning light--#
+	"""
+	Warning light condictions check for the on and off status of the trip
+	"""
+	with open(SDcsv) as csvfile:
+	    reader = csv.DictReader(csvfile)
+	    f = open("/Users/apple/Desktop/CE186/project/git_project/ce186/server_db/wallflower/static/test_warning.txt", "wb")
+	    for row in reader:
+	        time = datetime.datetime.strptime(row['timestamp'], '%H:%M:%S.%f %d/%m/%Y').isoformat() + 'Z'
+	        val =int(row['warninglight'])
+	        send_2server(val, "w", at=time, trip_obj=trip_obj)
+	        # write data to txt
+	        f.write("{},".format(val))
+
 main()
 
