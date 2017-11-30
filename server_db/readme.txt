@@ -10,3 +10,6 @@ User Guide (Keep Updating_):
 		4. Record user input, user feedback
 		5. Post trip route visualization on Google Map (the latest one)
 		6. Indicators of origin, destionation, proximity warning and collision warning, each with a different info window (try click it!)
+
+===== 	up to 11.29.2017. With the pitch, we have successfully concluded our project and only two more tasks to go, one is the showcase and the other is the final report! Keep it going, GREAT WORK TEAM!
+
