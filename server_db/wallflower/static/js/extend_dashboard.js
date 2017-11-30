@@ -156,7 +156,7 @@ function loadPlot( points ){
         plot.highcharts().series[0].setData( datapoints );
     }else{
         plot.highcharts().addSeries({
-            name: "Proximity (cm)",
+            name: "Proximity (m)",
             data: datapoints
         });
     }
